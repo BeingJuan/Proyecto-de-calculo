@@ -12,4 +12,4 @@
 - Calcula prioridad básica
 - Asigna camión y escombrera
 - Lleva puntos por reciclaje
-- Muestra indicadores operativos
+- Muestra indicadores operativos 
