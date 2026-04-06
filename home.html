@@ -1,0 +1,666 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio · EcoReporte{% endblock %}
+
+{% block extra_head %}
+<style>
+    .home-shell {
+        display: grid;
+        gap: 1.4rem;
+    }
+
+    .intro-summary {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .summary-card,
+    .summary-help {
+        padding: 1.8rem;
+        border-radius: 28px;
+        background: rgba(255,255,255,0.82);
+        border: 1px solid rgba(66,106,50,0.1);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.45rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.8);
+        border: 1px solid rgba(66,106,50,0.1);
+        color: var(--primary-strong);
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.5rem, 4.5vw, 4.2rem);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        color: var(--primary-strong);
+        max-width: 10ch;
+        margin-bottom: 1rem;
+    }
+
+    .hero-copy,
+    .summary-help p {
+        font-size: 1rem;
+        color: var(--text-soft);
+        line-height: 1.78;
+    }
+
+    .summary-help h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.55rem;
+        color: var(--primary-strong);
+        margin-bottom: 0.45rem;
+    }
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        margin-top: 1.5rem;
+    }
+
+    .hero-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.9rem;
+        margin-top: 1.5rem;
+    }
+
+    .metric-pill {
+        background: rgba(255,255,255,0.78);
+        border: 1px solid rgba(66,106,50,0.1);
+        border-radius: 18px;
+        padding: 1rem;
+    }
+
+    .metric-pill strong {
+        display: block;
+        font-size: 1.35rem;
+        color: var(--primary-strong);
+        margin-bottom: 0.15rem;
+    }
+
+    .metric-pill span {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .quick-list {
+        display: grid;
+        gap: 0.8rem;
+        margin-top: 1rem;
+    }
+
+    .quick-item {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        background: var(--primary-soft);
+        border-radius: 18px;
+        padding: 0.95rem 1rem;
+    }
+
+    .quick-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--primary-soft), var(--accent-soft));
+        color: var(--primary-strong);
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .quick-item strong {
+        display: block;
+        color: var(--primary-strong);
+        margin-bottom: 0.15rem;
+    }
+
+    .quick-item span {
+        color: var(--text-soft);
+        font-size: 0.92rem;
+    }
+
+    .panel-card {
+        padding: 2rem;
+        border-radius: 28px;
+        min-height: 100%;
+    }
+
+    .report-form {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .field {
+        display: grid;
+        gap: 0.45rem;
+    }
+
+    .field label {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--primary-strong);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+        width: 100%;
+        border: 1px solid rgba(66,106,50,0.14);
+        background: rgba(255,255,255,0.84);
+        border-radius: 16px;
+        padding: 0.95rem 1rem;
+        font: inherit;
+        color: var(--text);
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+        border-color: rgba(66,106,50,0.35);
+        box-shadow: 0 0 0 4px rgba(123,170,91,0.12);
+        background: white;
+    }
+
+    .field textarea {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .urgency-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.8rem;
+    }
+
+    .urgency-option input {
+        display: none;
+    }
+
+    .urgency-option label {
+        display: block;
+        cursor: pointer;
+        padding: 0.95rem;
+        border-radius: 18px;
+        border: 1px solid rgba(66,106,50,0.12);
+        background: rgba(255,255,255,0.76);
+        transition: all 0.25s ease;
+        text-align: center;
+    }
+
+    .urgency-option strong {
+        display: block;
+        color: var(--primary-strong);
+        margin-bottom: 0.15rem;
+        font-size: 0.98rem;
+    }
+
+    .urgency-option span {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+    }
+
+    .urgency-option input:checked + label {
+        background: linear-gradient(135deg, var(--primary-soft), rgba(255,255,255,0.96));
+        border-color: rgba(66,106,50,0.24);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(66,106,50,0.08);
+    }
+
+    .photo-hint {
+        font-size: 0.88rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    .submit-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 0.35rem;
+    }
+
+    .reward-note {
+        color: var(--primary-strong);
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .reports-list {
+        display: grid;
+        gap: 0.9rem;
+    }
+
+    .report-item {
+        background: rgba(255,255,255,0.78);
+        border: 1px solid rgba(66,106,50,0.1);
+        border-radius: 18px;
+        padding: 1rem;
+    }
+
+    .report-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.55rem;
+        flex-wrap: wrap;
+    }
+
+    .report-code {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+    }
+
+    .report-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+        margin-bottom: 0.55rem;
+    }
+
+    .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.82rem;
+        color: var(--primary-strong);
+        background: var(--primary-soft);
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+    }
+
+    .report-text {
+        color: var(--text-soft);
+        line-height: 1.65;
+        font-size: 0.95rem;
+    }
+
+    .report-text strong {
+        color: var(--primary-strong);
+        display: block;
+        margin-bottom: 0.2rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem 1rem 1rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state strong {
+        display: block;
+        color: var(--primary-strong);
+        margin-bottom: 0.35rem;
+        font-size: 1.05rem;
+    }
+
+    @media (max-width: 980px) {
+        .intro-summary {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .form-row,
+        .hero-metrics,
+        .urgency-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-title {
+            max-width: none;
+        }
+
+        .submit-row {
+            align-items: stretch;
+        }
+
+        .submit-row .btn-primary {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+    <div class="home-shell">
+        <div class="page-intro reveal-on-scroll is-visible">
+            <div>
+                <div class="page-kicker">EcoReporte comienza aquí</div>
+                <h2 class="section-title">Reportar residuos también es cuidar tu ciudad</h2>
+                <p class="section-subtitle">
+                    Cada reporte ayuda a identificar puntos críticos, mejorar la limpieza urbana y construir una ciudad más responsable entre todos.
+</p>
+            </div>
+        </div>
+
+        <section class="intro-summary reveal-on-scroll">
+            <div class="summary-card">
+                <div class="eyebrow">Una forma más simple de cuidar tu entorno</div>
+                <h1 class="hero-title">Reporta residuos de manera clara, rápida y útil.</h1>
+                <p class="hero-copy">
+                    EcoReporte te ayuda a registrar puntos con acumulación de residuos, hacer seguimiento
+                    a los reportes y sumar pequeñas acciones que mejoran la ciudad.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="#nuevo-reporte" class="btn-primary">Crear reporte</a>
+                    <a href="/mis-puntos" class="btn-secondary">Ver mis puntos</a>
+                </div>
+
+                <div class="hero-metrics">
+                    <div class="metric-pill">
+                        <strong>{{ reports|length }}</strong>
+                        <span>reportes recientes visibles</span>
+                    </div>
+                    <div class="metric-pill">
+                        <strong>{{ waste_types|length }}</strong>
+                        <span>tipos de residuos</span>
+                    </div>
+                    <div class="metric-pill">
+                        <strong>{{ zones|length }}</strong>
+                        <span>zonas disponibles</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-help">
+                <h3>¿Cómo funciona?</h3>
+                <p>
+                    Describe el punto, selecciona el tipo de residuo, indica la zona y envía.
+                        Entre más clara sea la información, más útil será para priorizar la atención.
+                </p>
+
+                <div class="quick-list">
+                    <div class="quick-item">
+                        <div class="quick-icon">1</div>
+                        <div>
+                            <strong>Ubica el lugar</strong>
+                            <span>Agrega una dirección o referencia clara.</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-item">
+                        <div class="quick-icon">2</div>
+                        <div>
+                            <strong>Describe lo que ves</strong>
+                            <span>Tipo de residuo, cantidad y contexto.</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-item">
+                        <div class="quick-icon">3</div>
+                        <div>
+                            <strong>Haz seguimiento</strong>
+                            <span>Consulta el estado del reporte luego de enviarlo.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="horizontal-flow">
+            <article class="scroll-panel reveal-on-scroll" id="nuevo-reporte">
+                <div class="card panel-card">
+                    <h2 class="section-title">Nuevo reporte</h2>
+                    <p class="section-subtitle">
+                        Completa la información principal y envíala en menos de un minuto.
+                    </p>
+
+                    <form class="report-form" id="reportForm">
+                        <div class="form-row">
+                            <div class="field">
+                                <label for="waste_type">Tipo de residuo</label>
+                                <select id="waste_type" name="waste_type" required>
+                                    <option value="">Selecciona una opción</option>
+                                    {% for waste in waste_types %}
+                                    <option value="{{ waste }}">{{ waste }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="zone">Zona</label>
+                                <select id="zone" name="zone" required>
+                                    <option value="">Selecciona una zona</option>
+                                    {% for zone in zones %}
+                                    <option value="{{ zone }}">{{ zone }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="address">Dirección o referencia</label>
+                            <input type="text" id="address" name="address" placeholder="Ej. Calle 5 con Carrera 34, frente al parque" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="description">Descripción</label>
+                            <textarea id="description" name="description" placeholder="Cuéntanos qué está pasando en el lugar, qué tipo de residuos ves y cualquier detalle que ayude a entender mejor la situación." required></textarea>
+                        </div>
+
+                        <div class="field">
+                            <label>Nivel de urgencia</label>
+                            <div class="urgency-grid">
+                                <div class="urgency-option">
+                                    <input type="radio" id="urgency_baja" name="urgency" value="baja">
+                                    <label for="urgency_baja">
+                                        <strong>Baja</strong>
+                                        <span>Puede esperar</span>
+                                    </label>
+                                </div>
+
+                                <div class="urgency-option">
+                                    <input type="radio" id="urgency_media" name="urgency" value="media" checked>
+                                    <label for="urgency_media">
+                                        <strong>Media</strong>
+                                        <span>Importante revisar</span>
+                                    </label>
+                                </div>
+
+                                <div class="urgency-option">
+                                    <input type="radio" id="urgency_alta" name="urgency" value="alta">
+                                    <label for="urgency_alta">
+                                        <strong>Alta</strong>
+                                        <span>Requiere atención pronta</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="photo">Foto opcional</label>
+                            <input type="file" id="photo" name="photo" accept="image/*">
+                            <div class="photo-hint">
+                                Puedes adjuntar una imagen del lugar. Si no tienes foto, igual puedes enviar el reporte.
+                            </div>
+                        </div>
+
+                        <div class="submit-row">
+                            <div class="reward-note">Enviar un reporte suma 15 puntos en tu perfil.</div>
+                            <button type="submit" class="btn-primary">Enviar reporte</button>
+                        </div>
+                    </form>
+                </div>
+            </article>
+
+            <article class="scroll-panel reveal-on-scroll">
+                <div class="card panel-card">
+                    <h2 class="section-title">Actividad reciente</h2>
+                    <p class="section-subtitle">
+                        Aquí puedes ver los reportes más recientes registrados en la aplicación.
+                    </p>
+
+                    {% if reports and reports|length > 0 %}
+                    <div class="reports-list" id="reportsList">
+                        {% for report in reports %}
+                        <article class="report-item">
+                            <div class="report-top">
+                                <div class="report-code">Reporte #{{ report.id }}</div>
+                                <span class="status-badge status-recibido">{{ report.status }}</span>
+                            </div>
+
+                            <div class="report-meta">
+                                <span class="meta-chip">{{ report.waste_type }}</span>
+                                <span class="meta-chip">{{ report.zone }}</span>
+                                <span class="meta-chip">{{ report.timestamp }}</span>
+                            </div>
+
+                            <div class="report-text">
+                                <strong>{{ report.address }}</strong>
+                                {{ report.description }}
+                            </div>
+                        </article>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state" id="reportsEmpty">
+                        <strong>Aún no hay reportes visibles.</strong>
+                        Cuando envíes el primero, aparecerá aquí para que puedas verlo de inmediato.
+                    </div>
+                    <div class="reports-list" id="reportsList" style="display:none;"></div>
+                    {% endif %}
+                </div>
+            </article>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const reportForm = document.getElementById('reportForm');
+    const photoInput = document.getElementById('photo');
+    const reportsList = document.getElementById('reportsList');
+    const reportsEmpty = document.getElementById('reportsEmpty');
+
+    function urgencyLabel(value) {
+        const labels = { baja: 'Baja', media: 'Media', alta: 'Alta' };
+        return labels[value] || value;
+    }
+
+    function readFileAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            if (!file) {
+                resolve(null);
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function createReportHTML(report) {
+        return `
+            <article class="report-item">
+                <div class="report-top">
+                    <div class="report-code">Reporte #${report.id}</div>
+                    <span class="status-badge status-recibido">${report.status}</span>
+                </div>
+
+                <div class="report-meta">
+                    <span class="meta-chip">${report.waste_type}</span>
+                    <span class="meta-chip">${report.zone}</span>
+                    <span class="meta-chip">${report.timestamp}</span>
+                    <span class="meta-chip">Urgencia ${urgencyLabel(report.urgency)}</span>
+                </div>
+
+                <div class="report-text">
+                    <strong>${report.address}</strong>
+                    ${report.description}
+                </div>
+            </article>
+        `;
+    }
+
+    reportForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const submitButton = reportForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Enviando...';
+
+        try {
+            const file = photoInput.files[0];
+            const photo = await readFileAsBase64(file);
+
+            const payload = {
+                waste_type: document.getElementById('waste_type').value,
+                zone: document.getElementById('zone').value,
+                address: document.getElementById('address').value,
+                description: document.getElementById('description').value,
+                urgency: document.querySelector('input[name="urgency"]:checked')?.value || 'media',
+                photo
+            };
+
+            const response = await fetch('/api/reports', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+        
+
+            if (!data.success) {
+                throw new Error('No se pudo registrar el reporte.');
+            }
+               if (data.new_points !== undefined) {
+    const navPoints = document.getElementById('nav-points');
+    if (navPoints) {
+        navPoints.textContent = data.new_points;
+    }
+}
+
+            if (reportsEmpty) {
+                reportsEmpty.style.display = 'none';
+            }
+
+            reportsList.style.display = 'grid';
+            reportsList.insertAdjacentHTML('afterbegin', createReportHTML(data.report));
+            reportForm.reset();
+            document.getElementById('urgency_media').checked = true;
+
+            showToast('Tu reporte fue enviado correctamente.', '✓');
+        } catch (error) {
+            console.error(error);
+            showToast('Hubo un problema al enviar el reporte.', '⚠');
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+        }
+    });
+</script>
+{% endblock %}
