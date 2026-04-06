@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EcoReporte{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <style>
+        :root {
+            --bg: #eef4ec;
+            --bg-deep: #dfe9da;
+            --surface: rgba(255, 255, 255, 0.88);
+            --surface-strong: rgba(255, 255, 255, 0.96);
+
+            --text: #1b2b1f;
+            --text-soft: #4e6553;
+            --text-muted: #7b8d7f;
+
+            --primary: #5e8b4a;
+            --primary-strong: #2f5d3a;
+            --primary-deep: #1f4028;
+            --primary-soft: #dcebd4;
+
+            --accent: #a8c686;
+            --accent-soft: #edf6e8;
+
+            --border: rgba(47, 93, 58, 0.12);
+            --border-strong: rgba(47, 93, 58, 0.22);
+
+            --success-bg: #e6f4e8;
+            --success-text: #2f6b3d;
+            --warning-bg: #fff6e4;
+            --warning-text: #8c6a21;
+
+            --shadow-sm: 0 8px 24px rgba(24, 46, 28, 0.05);
+            --shadow-md: 0 18px 46px rgba(24, 46, 28, 0.08);
+            --shadow-lg: 0 28px 70px rgba(24, 46, 28, 0.12);
+
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+
+            --container: 1380px;
+            --section-gap: clamp(1.2rem, 2vw, 2rem);
+            --section-min: clamp(320px, 34vw, 520px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(94,139,74,0.14), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(168,198,134,0.16), transparent 28%),
+                linear-gradient(180deg, var(--bg), var(--bg-deep));
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 20% 25%, rgba(255,255,255,0.35), transparent 18%),
+                radial-gradient(circle at 80% 75%, rgba(255,255,255,0.18), transparent 20%);
+            z-index: 0;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(238, 244, 236, 0.84);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(47, 93, 58, 0.08);
+        }
+
+        .nav-inner {
+            max-width: var(--container);
+            margin: 0 auto;
+            min-height: 76px;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .nav-logo {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .logo-mark {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+            color: white;
+            font-size: 1rem;
+            box-shadow: 0 12px 30px rgba(47,93,58,0.22);
+            flex-shrink: 0;
+        }
+
+        .logo-copy {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+        .logo-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.45rem;
+            color: var(--primary-deep);
+            letter-spacing: -0.03em;
+        }
+
+        .logo-subtitle {
+            margin-top: 0.2rem;
+            font-size: 0.79rem;
+            color: var(--text-muted);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-soft);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.72rem 1rem;
+            border-radius: 999px;
+            transition: all 0.22s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.78);
+            color: var(--primary-deep);
+        }
+
+        .nav-links a.active {
+            background: linear-gradient(135deg, rgba(94,139,74,0.16), rgba(168,198,134,0.2));
+            color: var(--primary-deep);
+            box-shadow: inset 0 0 0 1px rgba(47,93,58,0.08);
+        }
+
+        .nav-points-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            white-space: nowrap;
+            padding: 0.58rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.78);
+            border: 1px solid rgba(47,93,58,0.1);
+            color: var(--primary-strong);
+            font-size: 0.88rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .page-wrap {
+            position: relative;
+            z-index: 1;
+            max-width: var(--container);
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        .page-intro {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: end;
+            margin-bottom: 1.4rem;
+        }
+
+        .page-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.78);
+            border: 1px solid rgba(47,93,58,0.1);
+            color: var(--primary-strong);
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+        }
+
+        .horizontal-flow {
+            display: grid;
+            gap: var(--section-gap);
+            grid-template-columns: repeat(auto-fit, minmax(var(--section-min), 1fr));
+            align-items: stretch;
+        }
+
+        .scroll-panel {
+            min-height: calc(100vh - 165px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            scroll-margin-top: 110px;
+        }
+
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(50px) scale(0.985);
+            transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            will-change: opacity, transform;
+        }
+
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-strong);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 3vw, 2.7rem);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            color: var(--primary-deep);
+            margin-bottom: 0.45rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-soft);
+            font-size: 1rem;
+            line-height: 1.72;
+            margin-bottom: 1.6rem;
+            max-width: 60ch;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            border: none;
+            border-radius: 999px;
+            padding: 0.95rem 1.35rem;
+            font-family: inherit;
+            font-size: 0.96rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+            color: white;
+            box-shadow: 0 14px 34px rgba(47,93,58,0.22);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.86);
+            color: var(--primary-strong);
+            border: 1px solid rgba(47,93,58,0.1);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover,
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active,
+        .btn-secondary:active {
+            transform: scale(0.98);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.38rem 0.78rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .status-recibido {
+            background: var(--accent-soft);
+            color: var(--primary-strong);
+        }
+
+        .status-proceso {
+            background: var(--warning-bg);
+            color: var(--warning-text);
+        }
+
+        .status-resuelto {
+            background: var(--success-bg);
+            color: var(--success-text);
+        }
+
+        .leaflet-container {
+            border-radius: 22px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            padding: 0 1.5rem 2.5rem;
+        }
+
+        .footer-inner {
+            max-width: var(--container);
+            margin: 0 auto;
+            padding: 1.25rem 1.4rem;
+            border-radius: 22px;
+            background: rgba(255,255,255,0.7);
+            border: 1px solid rgba(47,93,58,0.08);
+            color: var(--text-muted);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .footer-inner strong {
+            color: var(--primary-deep);
+        }
+
+        .toast {
+            position: fixed;
+            right: 1.4rem;
+            bottom: 1.4rem;
+            z-index: 9999;
+            max-width: 340px;
+            padding: 1rem 1.1rem;
+            border-radius: 18px;
+            background: rgba(31, 64, 40, 0.96);
+            color: white;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(120%);
+            opacity: 0;
+            transition: all 0.28s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 1100px) {
+            .scroll-panel {
+                min-height: auto;
+            }
+
+            .horizontal-flow {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .nav-inner {
+                flex-wrap: wrap;
+                padding-top: 0.8rem;
+                padding-bottom: 0.8rem;
+            }
+
+            .nav-links {
+                order: 3;
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 0.2rem;
+            }
+
+            .nav-links::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .page-intro {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .page-wrap {
+                padding: 1.25rem 1rem 3rem;
+            }
+
+            .nav-inner {
+                padding: 0.85rem 1rem;
+            }
+
+            .logo-subtitle {
+                display: none;
+            }
+
+            .toast {
+                left: 1rem;
+                right: 1rem;
+                max-width: none;
+            }
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">
+                <div class="logo-mark">🌿</div>
+                <div class="logo-copy">
+                    <div class="logo-title">EcoReporte</div>
+                    <div class="logo-subtitle">Participación ciudadana eficaz</div>
+                </div>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="/" class="{% if request.endpoint == 'home' %}active{% endif %}">Inicio</a></li>
+                <li><a href="/mis-puntos" class="{% if request.endpoint == 'mis_puntos' %}active{% endif %}">Mis puntos</a></li>
+                <li><a href="/servicios" class="{% if request.endpoint == 'servicios' %}active{% endif %}">Servicios</a></li>
+            </ul>
+
+            <div class="nav-points-badge">
+                <span>●</span>
+                <span id="nav-points">{{user.points}}</span>
+                <span>pts</span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            Hecho con <strong>EcoReporte</strong> para conectar participación ciudadana, reciclaje y cuidado del entorno.
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        function showToast(msg, icon = '✓') {
+            const t = document.getElementById('toast');
+            t.innerHTML = `${icon} ${msg}`;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const revealItems = document.querySelectorAll('.reveal-on-scroll');
+            if (!revealItems.length) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, {
+                threshold: 0.18,
+                rootMargin: '0px 0px -10% 0px'
+            });
+
+            revealItems.forEach(item => observer.observe(item));
+        });
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

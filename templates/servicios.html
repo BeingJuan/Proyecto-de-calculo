@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Servicios y ayuda · EcoReporte{% endblock %}
+
+{% block extra_head %}
+<style>
+    .services-shell {
+        display: grid;
+        gap: 1.4rem;
+    }
+
+    .services-hero {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 1rem;
+    }
+
+    .hero-info,
+    .hero-help {
+        border-radius: 30px;
+        padding: 2.2rem;
+        background: rgba(255,255,255,0.84);
+        border: 1px solid rgba(66,106,50,0.1);
+        box-shadow: var(--shadow-md);
+    }
+
+    .hero-info h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.3rem, 5vw, 3.8rem);
+        color: var(--primary-strong);
+        line-height: 1;
+        letter-spacing: -0.04em;
+        margin-bottom: 1rem;
+        max-width: 10ch;
+    }
+
+    .hero-info p,
+    .hero-help p {
+        color: var(--text-soft);
+        line-height: 1.75;
+        font-size: 1rem;
+    }
+
+    .hero-help h3 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary-strong);
+        font-size: 1.45rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-note {
+        margin-top: 1rem;
+        padding: 1rem 1.1rem;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--primary-soft), var(--accent-soft));
+        color: var(--primary-strong);
+        font-weight: 600;
+    }
+
+    .panel-card {
+        padding: 2rem;
+        border-radius: 28px;
+        min-height: 100%;
+    }
+
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .service-card {
+        background: rgba(255,255,255,0.82);
+        border: 1px solid rgba(66,106,50,0.1);
+        border-radius: 24px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .service-icon {
+        width: 52px;
+        height: 52px;
+        display: grid;
+        place-items: center;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--primary-soft), var(--accent-soft));
+        font-size: 1.35rem;
+        margin-bottom: 1rem;
+    }
+
+    .service-card h3 {
+        color: var(--primary-strong);
+        font-size: 1.08rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .service-card p {
+        color: var(--text-soft);
+        line-height: 1.65;
+        font-size: 0.95rem;
+    }
+
+    .faq-list {
+        display: grid;
+        gap: 0.9rem;
+    }
+
+    .faq-item {
+        background: rgba(255,255,255,0.78);
+        border: 1px solid rgba(66,106,50,0.1);
+        border-radius: 18px;
+        padding: 1rem 1.1rem;
+    }
+
+    .faq-item strong {
+        display: block;
+        color: var(--primary-strong);
+        margin-bottom: 0.35rem;
+    }
+
+    .faq-item p {
+        color: var(--text-soft);
+        line-height: 1.7;
+        font-size: 0.95rem;
+    }
+
+    .cta-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        background: linear-gradient(135deg, rgba(232,243,222,0.96), rgba(242,237,251,0.92));
+        border: 1px solid rgba(66,106,50,0.12);
+        border-radius: 24px;
+        padding: 1.5rem 1.7rem;
+    }
+
+    .cta-panel strong {
+        display: block;
+        color: var(--primary-strong);
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .cta-panel span {
+        color: var(--text-soft);
+    }
+
+    @media (max-width: 980px) {
+        .services-hero,
+        .services-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+    <div class="services-shell">
+        <div class="page-intro reveal-on-scroll is-visible">
+            <div>
+                <div class="page-kicker">Guía y apoyo</div>
+                <h2 class="section-title">Aquí encontrarás recomendaciones claras para hacer reportes más útiles y aprovechar mejor la plataforma.</h2>
+                <p class="section-subtitle">
+                    
+                </p>
+            </div>
+        </div>
+
+        <section class="services-hero reveal-on-scroll">
+            <div class="hero-info">
+                <h1>Servicios y ayuda para reportar mejor.</h1>
+                <p>
+                    Aquí encuentras una guía simple para entender cómo funciona EcoReporte,
+                    qué información hace más útil un reporte y qué puedes hacer si necesitas apoyo.
+                </p>
+            </div>
+
+            <div class="hero-help">
+                <h3>Antes de enviar</h3>
+                <p>
+                    Intenta ubicar bien la dirección, seleccionar el tipo de residuo correcto y
+                    explicar con tus palabras lo que está ocurriendo. No necesitas escribir demasiado;
+                    solo lo suficiente para que otra persona entienda el caso.
+                </p>
+
+                <div class="contact-note">
+                    Consejo rápido: una descripción breve pero clara suele ser mejor que un texto largo y confuso.
+                </div>
+            </div>
+        </section>
+
+        <section class="horizontal-flow">
+            <article class="scroll-panel reveal-on-scroll">
+                <div class="card panel-card">
+                    <h2 class="section-title">Recomendaciones clave</h2>
+                    <p class="section-subtitle">
+                        Tres pautas rápidas para que el reporte sea entendible desde el primer vistazo.
+                    </p>
+
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <div class="service-icon">📍</div>
+                            <h3>Ubicación clara</h3>
+                            <p>
+                                Incluye la dirección exacta o una referencia fácil de reconocer:
+                                parque, esquina, local o conjunto cercano.
+                            </p>
+                        </div>
+
+                        <div class="service-card">
+                            <div class="service-icon">🧾</div>
+                            <h3>Descripción útil</h3>
+                            <p>
+                                Explica qué residuos observas, si están regados, acumulados o mezclados,
+                                y si afectan el paso o el entorno.
+                            </p>
+                        </div>
+
+                        <div class="service-card">
+                            <div class="service-icon">📷</div>
+                            <h3>Foto opcional</h3>
+                            <p>
+                                Una imagen ayuda a dar contexto, pero no es obligatoria.
+                                Lo más importante es que el reporte sea entendible.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="scroll-panel reveal-on-scroll">
+                <div class="card panel-card">
+                    <h2 class="section-title">Preguntas frecuentes</h2>
+                    <p class="section-subtitle">
+                        Respuestas simples para que usar la app sea más fácil desde el primer momento.
+                    </p>
+
+                    <div class="faq-list">
+                        <div class="faq-item">
+                            <strong>¿Qué gano al enviar un reporte?</strong>
+                            <p>
+                                Cada reporte suma puntos a tu perfil y te ayuda a desbloquear beneficios
+                                con aliados de la aplicación.
+                            </p>
+                        </div>
+
+                        <div class="faq-item">
+                            <strong>¿Puedo reportar sin foto?</strong>
+                            <p>
+                                Sí. La foto es opcional. Si no la tienes, asegúrate de escribir una buena
+                                descripción y una ubicación clara.
+                            </p>
+                        </div>
+
+                        <div class="faq-item">
+                            <strong>¿Cómo sé si mi reporte quedó registrado?</strong>
+                            <p>
+                                Después de enviarlo, verás una confirmación en pantalla y el reporte aparecerá
+                                en la actividad reciente de la página principal.
+                            </p>
+                        </div>
+
+                        <div class="faq-item">
+                            <strong>¿Dónde veo mis beneficios y puntos?</strong>
+                            <p>
+                                En la sección “Mis puntos” puedes revisar tu progreso, tus aliados disponibles
+                                y los puntos de reciclaje cercanos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="cta-panel reveal-on-scroll">
+            <div>
+                <strong>¿Listo para registrar un nuevo caso?</strong>
+                <span>Puedes volver al inicio y crear tu reporte en menos de un minuto.</span>
+            </div>
+            <a href="/" class="btn-primary">Ir al inicio</a>
+        </section>
+    </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const response = await fetch('/api/user-points');
+        const data = await response.json();
+
+        const navPoints = document.getElementById('nav-points');
+        if (navPoints) {
+            navPoints.textContent = data.points;
+        }
+    } catch (error) {
+        console.error('Error cargando puntos:', error);
+    }
+});
+</script>
+{% endblock %}
