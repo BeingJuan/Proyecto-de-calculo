@@ -5,7 +5,7 @@ import base64
 from datetime import datetime
 import uuid
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 app.secret_key = 'ecoapp_secret_key_2024'
 
 
